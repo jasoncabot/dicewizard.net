@@ -1,0 +1,39 @@
+html, body, form, p {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+input:focus { outline: none; }
+
+#root {
+  height: 100%;
+}
+
+.brutal {
+  color: #333333;
+  background-color: #FCFCFC;
+  font-family: Courier,monospace;
+  font-size: 2em;  
+}
+
+
+p {
+  margin: 2em 0;
+}
+
+input.brutal {
+  border: none;
+  border-bottom: 1px dashed #333333;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+button.brutal {
+  color: #FCFCFC;
+  background-color: #333333;
+}

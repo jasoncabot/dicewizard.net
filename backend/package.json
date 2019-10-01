@@ -1,0 +1,15 @@
+{
+  "name": "diceatthetable",
+  "version": "1.0.0",
+  "description": "Server for realtime dice roll events",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason Cabot",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "socket.io": "^2.3.0"
+  }
+}

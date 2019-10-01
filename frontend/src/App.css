@@ -1,0 +1,21 @@
+.App {
+  display: flex;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  box-shadow: 0 0 10px rgba(0, 0, 0, .3);
+  letter-spacing: 1px;
+  position: fixed;
+  top: 25px;
+  left: -50px;
+  text-align: center;
+  line-height: 50px;
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  width: 200px;
+}
