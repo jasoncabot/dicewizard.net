@@ -1,0 +1,11 @@
+.lobby {
+    max-width: 50%;
+    line-height: 1.5em;
+    text-align: center;
+}
+
+@media only screen and (max-width: 600px) {
+    .lobby {
+        max-width: 100%;
+    }
+}
