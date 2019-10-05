@@ -27,6 +27,7 @@ const roll = (count, size) => {
 };
 
 let tables = {};
+let messages = {};
 
 const name = (id) => {
     return (tables[id] || {}).name;
@@ -36,53 +37,83 @@ const table = (id) => {
     return (tables[id] || {}).table;
 }
 
-const rollInBounds = ({size, count}) => {
+const rollInBounds = ({ size, count }) => {
     // TODO: verify
     return true;
 }
 
+const log = (socket, action, data) => {
+    console.log(JSON.stringify({
+        id: socket.id, action, data
+    }));
+}
+
+const appendText = (table, text) => {
+    let message = {
+        id: guid(),
+        msg: text,
+        table: table,
+        at: Date.now()
+    };
+    io.to(table).emit('message', message);
+
+    const updatedLog = messages[table] || [];
+    updatedLog.unshift(message);
+    messages[table] = updatedLog;
+
+    console.log('INFO ' + JSON.stringify(messages));
+}
+
 io.on('connection', (socket) => {
-    console.log(socket.id + ' connected');
+    log(socket, 'connected');
 
     socket.on('join', (data) => {
-        console.log(socket.id + ' joined ' + JSON.stringify(data));
+        log(socket, 'joined', data);
+
+        // TODO: validate that data.table is correct length and type   
+        // TODO: check that data.table exists
         tables[socket.id] = {
             table: data.table, // table id
             name: data.name // person name
         };
-        socket.join(data.table);
 
-        // TODO: check that data.table exists
+        socket.join(data.table);
+        appendText(data.table, name(socket.id) + ' joined');
 
         io.to(socket.id).emit('table_changed', {
             name: data.name,
             table: data.table,
-            log: [
-                { id: guid(), msg: 'this is a sample message of an existing table (joining)', table: data.table, at: Date.now() }
-            ]
+            log: messages[data.table] || []
         });
     });
 
     socket.on('create', (data) => {
-        console.log(socket.id + ' created ' + JSON.stringify(data));
+        log(socket, 'create', data);
         const tableId = randomString(4);
         tables[socket.id] = {
             table: tableId,
             name: data.name // person name
         };
         socket.join(tableId);
+        appendText(data.table, name(socket.id) + ' started');
 
         io.to(socket.id).emit('table_changed', {
             name: data.name,
             table: tableId,
-            log: [
-                { id: guid(), msg: 'this is a sample message of an existing table (creating)', table: data.table, at: Date.now() }
-            ]
+            log: messages[tableId] || []
         });
     });
 
     socket.on('leave', (data) => {
-        console.log(socket.id + ' left ' + JSON.stringify(data));
+        log(socket, 'leave', data);
+
+        io.to(data.table).emit('message', {
+            id: guid(),
+            msg: name(socket.id) + ' left',
+            table: data.table,
+            at: Date.now()
+        });
+
         tables[socket.id] = {};
         socket.leave(data.table);
 
@@ -94,19 +125,13 @@ io.on('connection', (socket) => {
     });
 
     socket.on('roll', (data) => {
+        log(socket, 'roll', data);
         if (!rollInBounds(data)) {
-            console.log('invalid roll from ' + socket.id + ' of ' + data.count + 'd' + data.size);
+            log(socket, 'roll', { error: 'data not in bounds' });
             return;
         }
-        console.log(socket.id + ' rolled ' + JSON.stringify(data));
-        const sentAt = Date.now();
-        const tableId = table(socket.id);
-        io.to(tableId).emit('message', {
-            id: guid(),
-            msg: name(socket.id) + ' rolled ' + roll(data.count, data.size) + ' (' + data.count + 'd' + data.size + ')',
-            table: tableId,
-            at: sentAt
-        });
+        const text = name(socket.id) + ' rolled ' + roll(data.count, data.size) + ' (' + data.count + 'd' + data.size + ')'
+        appendText(table(socket.id), text);
     });
 });
 

@@ -1,8 +1,11 @@
 import React from 'react';
-import { SessionContext } from './session-context';
 import Welcome from './Welcome';
 import Lobby from './Lobby';
+import DiceTable from './DiceTable';
+import { SocketContext } from './socket-context';
 import './App.css';
+
+
 
 class App extends React.Component {
 
@@ -10,97 +13,66 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      name: '',
-      table: ''
+      name: window.sessionStorage.name || '',
+      table: window.sessionStorage.table || '',
+      started: false
     }
 
-    this.start = this.start.bind(this);
-    this.roll = this.roll.bind(this);
-    this.leave = this.leave.bind(this);
+    this.onTableChanged = this.onTableChanged.bind(this);
 
     this.updateName = this.updateName.bind(this);
     this.updateTable = this.updateTable.bind(this);
-    this.updateDiceCount = this.updateDiceCount.bind(this);
-    this.updateDiceSize = this.updateDiceSize.bind(this);
-
-    this.onMessageReceived = this.onMessageReceived.bind(this);
-    this.onTableChanged = this.onTableChanged.bind(this);
   }
 
   componentDidMount() {
-    // this.context.on('table_changed', this.onTableChanged);
-    // this.context.on('message', this.onMessageReceived);
+    this.context.on('table_changed', this.onTableChanged);
   }
 
   componentWillUnmount() {
-    // this.context.off('table_changed', this.onTableChanged);
-    // this.context.off('message', this.onMessageReceived);
+    this.context.off('table_changed', this.onTableChanged);
   }
 
-  start() {
-    // if (this.state.table && this.state.table.length > 0) {
-    //   this.context.emit('join', { name: this.state.name, table: this.state.table });
-    // } else {
-    //   this.context.emit('create', { name: this.state.name });
-    // }
-  }
-
-  roll() {
-    // this.context.emit('roll', { count: this.state.diceCount, size: this.state.diceSize });
-  }
-
-  leave() {
-    // this.context.emit('leave', { name: this.state.name, table: this.state.table });
-  }
-
-  updateName(name) {
+  updateName = (name) => {
+    console.log('updating name to ' + name);
+    window.sessionStorage.name = name;
     this.setState({ name });
   }
 
-  updateTable(table) {
-    this.setState({ table });
-  }
-
-  updateDiceCount(event) {
-    this.setState({ diceCount: event.target.value });
-  }
-
-  updateDiceSize(event) {
-    this.setState({ diceSize: event.target.value });
+  updateTable = (table) => {
+    console.log('udpating table to ' + table);
+    window.sessionStorage.table = table;
+    this.setState({ table, started: true });
   }
 
   onTableChanged(data) {
     console.log('changed table with ' + JSON.stringify(data));
+    window.sessionStorage.name = data.name;
+    window.sessionStorage.table = data.table;
     this.setState({
       name: data.name,
-      table: data.table
+      table: data.table,
+      log: data.log,
+      started: data.table.length > 0
     });
   }
 
-  onMessageReceived(data) {
-    console.log('updated log with ' + JSON.stringify(data));
-    const updatedLog = this.state.log;
-    updatedLog.push(data);
-    this.setState({ log: updatedLog });
-  }
-
-  contentFromState() {
+  buildContent(state) {
 
     // Prompt for name if we don't have one already
-    if (this.state.name.length === 0) {
+    if (state.name.length === 0) {
       return (<Welcome onNameUpdated={this.updateName} />);
     }
 
     // Prompt to join a table if we don't have one
-    if (this.state.table.length === 0) {
-      return (<Lobby name={this.state.name} onEntered={this.updateTable} />);
+    if (state.table.length === 0 && !state.started) {
+      return (<Lobby name={state.name} onEntered={this.updateTable} />);
     }
 
-    return (<div>table</div>);
+    return (<DiceTable name={state.name} table={state.table} history={state.log} />);
   }
 
   render() {
-    const content = this.contentFromState();
+    const content = this.buildContent(this.state);
     return (
       <div className="App">
         <div className="title">DatT</div>
@@ -109,6 +81,7 @@ class App extends React.Component {
     );
   }
 }
-App.contextType = SessionContext;
+
+App.contextType = SocketContext;
 
 export default App;

@@ -1,12 +1,8 @@
 import React from 'react';
+import { SocketContext } from './socket-context';
+import './DiceTable.css';
 
-const DiceTable = (props) => {
-
-        // <div>
-    //   <input onChange={this.updateDiceCount} value={this.state.diceCount} />d<input onChange={this.updateDiceSize} value={this.state.diceSize} />
-    //   <button onClick={this.roll}>roll</button><br />
-    // </div>
-    // <button onClick={this.leave}>leave</button><br />
+const RollHistory = (props) => {
 
     const lines = props.log.map((item, idx) => {
         return (
@@ -15,5 +11,83 @@ const DiceTable = (props) => {
     });
     return (<ol>{lines}</ol>);
 }
+
+class DiceTable extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            count: 1,
+            size: 20,
+            log: props.history || []
+        }
+
+        this.roll = this.roll.bind(this);
+        this.leave = this.leave.bind(this);
+
+        this.updateDiceCount = this.updateDiceCount.bind(this);
+        this.updateDiceSize = this.updateDiceSize.bind(this);
+
+        this.onMessageReceived = this.onMessageReceived.bind(this);
+    }
+
+    componentDidMount() {
+        this.context.on('message', this.onMessageReceived);
+
+
+        if (this.props.table && this.props.table.length > 0) {
+            this.context.emit('join', { name: this.props.name, table: this.props.table });
+        } else {
+            this.context.emit('create', { name: this.props.name });
+        }
+    }
+
+    componentWillUnmount() {
+        this.context.off('message', this.onMessageReceived);
+    }
+
+    updateDiceCount(event) {
+        this.setState({ count: event.target.value });
+    }
+
+    updateDiceSize(event) {
+        this.setState({ size: event.target.value });
+    }
+
+    onMessageReceived(data) {
+        console.log('updated log with ' + JSON.stringify(data));
+        const updatedLog = this.state.log;
+        updatedLog.unshift(data);
+        this.setState({ log: updatedLog });
+    }
+
+    roll(e) {
+        e.preventDefault();
+        this.context.emit('roll', { count: this.state.count, size: this.state.size });
+    }
+
+    leave() {
+        this.context.emit('leave', { name: this.props.name, table: this.props.table });
+    }
+
+    render() {
+        return (
+            <div>
+                <span>Table is '{this.props.table}'</span>
+                <div className="dice">
+                    <form onSubmit={this.roll}>
+                    <input onChange={this.updateDiceCount} value={this.state.count} />d<input onChange={this.updateDiceSize} value={this.state.size} />
+                    <button className="brutal" type="submit" autoFocus>roll</button>
+                    </form>
+                </div>
+                <button className="brutal secondary" onClick={this.leave}>leave</button><br />
+                <RollHistory log={this.state.log} />
+            </div>
+        );
+    }
+}
+
+DiceTable.contextType = SocketContext;
 
 export default DiceTable;
