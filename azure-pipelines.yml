@@ -5,7 +5,7 @@ variables:
 
   # Azure Resource Manager connection created during pipeline creation
   azureSubscription: '91c7cb24-569e-4d44-8a45-f9703159ec96'
-  azureStorageSubscription: '04fe963c-dced-4688-9372-1be7f86c986f'
+  azureStorageSubscription: 'Jason Personal AIRs Subscription (04fe963c-dced-4688-9372-1be7f86c986f)'
 
   # Web app name
   webAppName: 'diceatthetable'
