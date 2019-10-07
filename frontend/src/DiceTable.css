@@ -1,19 +1,29 @@
 .dice {
-    /* color: #333333;
-    background-color: #FCFCFC;
-    font-family: Courier,monospace;
-    font-size: 2em;   */
-  }
-  
-  .dice input {
-    border: none;
-    border-bottom: 1px dashed #333333;
-    box-sizing: border-box;
-    text-align: center;
-    width: 40px;
-  }
-  
-  .dice button {
-    color: #FCFCFC;
-    background-color: #333333;
-  }
+  margin: 1em 0;
+}
+
+.dice input {
+  border: none;
+  border-bottom: 1px dashed #333333;
+  box-sizing: border-box;
+  text-align: center;
+  width: 40px;
+  font-size: 1em;
+  font-family: Courier,monospace;
+}
+
+.dice button {
+  color: #FCFCFC;
+  background-color: #333333;
+  margin-left: 1em;
+}
+
+.brutal .secondary {
+  font-size: 1em;
+  background-color: #AAAAAA;
+}
+
+ol {
+  position: absolute;
+  display: block;
+}

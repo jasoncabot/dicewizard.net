@@ -38,7 +38,10 @@ const table = (id) => {
 }
 
 const rollInBounds = ({ size, count }) => {
-    // TODO: verify
+    if (size > 100) return false;
+    if (size < 1) return false;
+    if (count > 1000) return false;
+    if (count < 1) return false;
     return true;
 }
 
@@ -62,26 +65,39 @@ const appendText = (table, text) => {
     messages[table] = updatedMessages;
 }
 
+const normalise = (tableId) => {
+    return (tableId || '').toUpperCase();
+}
+
 io.on('connection', (socket) => {
     log(socket, 'connected');
 
     socket.on('join', (data) => {
-        log(socket, 'joined', data);
+        if (data.table.length !== 4) {
+            log(socket, 'join', { error: 'invalid table' });
+            return;
+        }
 
-        // TODO: validate that data.table is correct length and type   
-        // TODO: check that data.table exists
+        let tableId = normalise(data.table);
+
+        if (!table(tableId)) {
+            log(socket, 'join', { error: 'table not found' });
+            return;
+        }
+
+        log(socket, 'joined', data);
         tables[socket.id] = {
-            table: data.table, // table id
+            table: tableId, // table id
             name: data.name // person name
         };
 
-        socket.join(data.table);
-        appendText(data.table, name(socket.id) + ' joined');
+        socket.join(tableId);
+        appendText(tableId, name(socket.id) + ' joined');
 
         io.to(socket.id).emit('table_changed', {
             name: data.name,
-            table: data.table,
-            log: messages[data.table] || []
+            table: tableId,
+            log: messages[tableId] || []
         });
     });
 

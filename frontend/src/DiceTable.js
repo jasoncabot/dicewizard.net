@@ -19,9 +19,10 @@ class DiceTable extends React.Component {
 
         this.state = {
             count: 1,
-            size: 20,
-            log: props.history || []
+            size: 20
         }
+
+        console.log('DiceTable.constructor: ' + JSON.stringify(props));
 
         this.roll = this.roll.bind(this);
         this.leave = this.leave.bind(this);
@@ -34,8 +35,6 @@ class DiceTable extends React.Component {
 
     componentDidMount() {
         this.context.on('message', this.onMessageReceived);
-
-
         if (this.props.table && this.props.table.length > 0) {
             this.context.emit('join', { name: this.props.name, table: this.props.table });
         } else {
@@ -56,10 +55,8 @@ class DiceTable extends React.Component {
     }
 
     onMessageReceived(data) {
-        console.log('updated log with ' + JSON.stringify(data));
-        const updatedLog = this.state.log;
-        updatedLog.unshift(data);
-        this.setState({ log: updatedLog });
+        console.log('DiceTable.onMessageReceived: ' + JSON.stringify(data));
+        this.props.updateLog(data);
     }
 
     roll(e) {
@@ -72,17 +69,18 @@ class DiceTable extends React.Component {
     }
 
     render() {
+        console.log('DIceTable.render');
         return (
-            <div>
-                <span>Table is '{this.props.table}'</span>
+            <div className="container">
+                <div>Table: '{this.props.table}'</div>
                 <div className="dice">
                     <form onSubmit={this.roll}>
                     <input onChange={this.updateDiceCount} value={this.state.count} />d<input onChange={this.updateDiceSize} value={this.state.size} />
                     <button className="brutal" type="submit" autoFocus>roll</button>
                     </form>
                 </div>
-                <button className="brutal secondary" onClick={this.leave}>leave</button><br />
-                <RollHistory log={this.state.log} />
+                <button className="brutal secondary" onClick={this.leave}>leave {this.props.table}</button><br />
+                <RollHistory log={this.props.log} />
             </div>
         );
     }
