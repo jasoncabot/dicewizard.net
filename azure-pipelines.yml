@@ -16,7 +16,7 @@ variables:
   vmImageName: 'ubuntu-latest'
 
 stages:
-- stage: Build Frontend
+- stage: BuildFrontend
   displayName: Build stage
   jobs:  
   - job: Build
@@ -49,7 +49,7 @@ stages:
     - upload: $(Build.ArtifactStagingDirectory)/frontend-$(Build.BuildId).zip
       artifact: frontend
 
-- stage: Build Backend
+- stage: BuildBackend
   displayName: Build stage
   jobs:  
   - job: Build
