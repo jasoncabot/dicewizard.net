@@ -16,7 +16,7 @@ variables:
   vmImageName: 'ubuntu-latest'
 
 stages:
-- stage: Build
+- stage: Build Frontend
   displayName: Build stage
   jobs:  
   - job: Build
@@ -26,10 +26,12 @@ stages:
 
     steps:
     - task: Npm@1
+      displayName: "Install dependencies"
       inputs:
         command: 'install'
         workingDir: 'frontend'
     - task: Npm@1
+      displayName: "Create artifact"
       inputs:
         command: 'custom'
         customCommand: 'run build --if-present'
@@ -46,6 +48,39 @@ stages:
 
     - upload: $(Build.ArtifactStagingDirectory)/frontend-$(Build.BuildId).zip
       artifact: frontend
+
+- stage: Build Backend
+  displayName: Build stage
+  jobs:  
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: NodeTool@0
+      displayName: 'Use Node version'
+      inputs:
+        versionSpec: 10.x
+
+    - task: Npm@0
+      displayName: 'npm install'
+      inputs:
+        cwd: backend
+        arguments: '--force'
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive files '
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/backend'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/backend-$(Build.BuildId).zip
+        replaceExistingArchive: true
+
+    - upload: $(Build.ArtifactStagingDirectory)/backend-$(Build.BuildId).zip
+      artifact: backend
+
+
 
 # - stage: Deploy
 #   displayName: Deploy stage
