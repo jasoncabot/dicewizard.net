@@ -50,15 +50,12 @@ stages:
     - upload: $(Build.ArtifactStagingDirectory)/frontend-$(Build.BuildId).zip
       artifact: frontend
 
-    - task: AzureFileCopy@3
+    - task: AzureCLI@2
       inputs:
-        SourcePath: '$(System.DefaultWorkingDirectory)/frontend/build'
         azureSubscription: $(azureStorageSubscription)
-        Destination: 'AzureBlob'
-        storage: 'diceatthetable'
-        ContainerName: 'frontend'
-
-    
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: 'az storage blob upload-batch -d "frontend" --account-name "diceatthetable" -s "$(System.ArtifactsDirectory)/frontend/build/"'
 
 - stage: BuildBackend
   displayName: Build stage
