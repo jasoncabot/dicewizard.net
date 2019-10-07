@@ -88,32 +88,30 @@ stages:
     - upload: $(Build.ArtifactStagingDirectory)/backend-$(Build.BuildId).zip
       artifact: backend
 
-
-
-# - stage: Deploy
-#   displayName: Deploy stage
-#   dependsOn: Build
-#   condition: succeeded()
-#   jobs:
-#   - deployment: Deploy
-#     displayName: Deploy
-#     environment: $(environmentName)
-#     pool: 
-#       vmImage: $(vmImageName)
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:            
-#           - task: AzureRmWebAppDeployment@4
-#             displayName: 'Azure App Service Deploy: diceatthetable'
-#             inputs:
-#               azureSubscription: $(azureSubscription)
-#               appType: webAppLinux
-#               WebAppName: $(webAppName)
-#               packageForLinux: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
-#               RuntimeStack: 'NODE|10.10'
-#               StartupCommand: 'npm run start'
-#               ScriptType: 'Inline Script'
-#               InlineScript: |
-#                 npm install
-#                 npm run build --if-present
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: BuildBackend
+  condition: succeeded()
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: $(environmentName)
+    pool: 
+      vmImage: $(vmImageName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:            
+          - task: AzureRmWebAppDeployment@4
+            displayName: 'Azure App Service Deploy: diceatthetable'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appType: webAppLinux
+              WebAppName: $(webAppName)
+              packageForLinux: '$(Pipeline.Workspace)/backend/backend-$(Build.BuildId).zip'
+              RuntimeStack: 'NODE|10.10'
+              StartupCommand: 'npm run start'
+              ScriptType: 'Inline Script'
+              InlineScript: |
+                npm install
+                npm run build --if-present
