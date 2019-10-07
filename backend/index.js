@@ -57,11 +57,9 @@ const appendText = (table, text) => {
     };
     io.to(table).emit('message', message);
 
-    const updatedLog = messages[table] || [];
-    updatedLog.unshift(message);
-    messages[table] = updatedLog;
-
-    console.log('INFO ' + JSON.stringify(messages));
+    const updatedMessages = messages[table] || [];
+    updatedMessages.unshift(message);
+    messages[table] = updatedMessages;
 }
 
 io.on('connection', (socket) => {
@@ -135,4 +133,4 @@ io.on('connection', (socket) => {
     });
 });
 
-io.listen(4500);
+io.listen(process.env.PORT);
