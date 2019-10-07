@@ -110,7 +110,7 @@ stages:
               WebAppName: $(webAppName)
               packageForLinux: '$(Pipeline.Workspace)/backend/backend-$(Build.BuildId).zip'
               RuntimeStack: 'NODE|10.10'
-              StartupCommand: 'npm run start'
+              StartupCommand: 'node index.js'
               ScriptType: 'Inline Script'
               InlineScript: |
                 npm install
