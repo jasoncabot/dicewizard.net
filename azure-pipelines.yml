@@ -5,6 +5,7 @@ variables:
 
   # Azure Resource Manager connection created during pipeline creation
   azureSubscription: '91c7cb24-569e-4d44-8a45-f9703159ec96'
+  azureStorageSubscription: '04fe963c-dced-4688-9372-1be7f86c986f'
 
   # Web app name
   webAppName: 'diceatthetable'
@@ -20,7 +21,7 @@ stages:
   displayName: Build stage
   jobs:  
   - job: Build
-    displayName: Build
+    displayName: Build Frontend
     pool:
       vmImage: $(vmImageName)
 
@@ -49,11 +50,21 @@ stages:
     - upload: $(Build.ArtifactStagingDirectory)/frontend-$(Build.BuildId).zip
       artifact: frontend
 
+    - task: AzureFileCopy@3
+      inputs:
+        SourcePath: '$(System.DefaultWorkingDirectory)/frontend/build'
+        azureSubscription: $(azureStorageSubscription)
+        Destination: 'AzureBlob'
+        storage: 'diceatthetable'
+        ContainerName: 'frontend'
+
+    
+
 - stage: BuildBackend
   displayName: Build stage
   jobs:  
   - job: Build
-    displayName: Build
+    displayName: Build Backend
     pool:
       vmImage: $(vmImageName)
     steps:
