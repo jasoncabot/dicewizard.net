@@ -55,7 +55,7 @@ stages:
         azureSubscription: $(azureStorageSubscription)
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
-        inlineScript: 'az storage blob upload-batch -d "\$web" --account-name "diceatthetable" -s "$(System.DefaultWorkingDirectory)/frontend/build"'
+        inlineScript: 'az storage blob sync -c "\$web" --account-name "diceatthetable" -s "$(System.DefaultWorkingDirectory)/frontend/build"'
 
 - stage: BuildBackend
   displayName: Build stage
