@@ -22,8 +22,6 @@ class DiceTable extends React.Component {
             size: 20
         }
 
-        console.log('DiceTable.constructor: ' + JSON.stringify(props));
-
         this.roll = this.roll.bind(this);
         this.leave = this.leave.bind(this);
 
@@ -55,7 +53,6 @@ class DiceTable extends React.Component {
     }
 
     onMessageReceived(data) {
-        console.log('DiceTable.onMessageReceived: ' + JSON.stringify(data));
         this.props.updateLog(data);
     }
 
@@ -69,7 +66,6 @@ class DiceTable extends React.Component {
     }
 
     render() {
-        console.log('DIceTable.render');
         return (
             <div className="container">
                 <div>Table: '{this.props.table}'</div>
