@@ -40,7 +40,7 @@ const table = (id) => {
 const rollInBounds = ({ size, count }) => {
     if (size > 100) return false;
     if (size < 1) return false;
-    if (count > 1000) return false;
+    if (count > 999) return false;
     if (count < 1) return false;
     return true;
 }
@@ -149,4 +149,4 @@ io.on('connection', (socket) => {
     });
 });
 
-io.listen(process.env.PORT);
+io.listen(process.env.PORT || 4500);

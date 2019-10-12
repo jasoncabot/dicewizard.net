@@ -16,10 +16,11 @@ class App extends React.Component {
       name: window.sessionStorage.name || '',
       table: window.sessionStorage.table || '',
       log: [],
-      started: false,
+      started: false
     }
 
     this.onTableChanged = this.onTableChanged.bind(this);
+    this.onDisconnected = this.onDisconnected.bind(this);
 
     this.updateName = this.updateName.bind(this);
     this.updateTable = this.updateTable.bind(this);
@@ -28,10 +29,12 @@ class App extends React.Component {
 
   componentDidMount() {
     this.context.on('table_changed', this.onTableChanged);
+    this.context.on('disconnect', this.onDisconnected);
   }
 
   componentWillUnmount() {
     this.context.off('table_changed', this.onTableChanged);
+    this.context.off('disconnect', this.onDisconnected);
   }
 
   updateName = (name) => {
@@ -61,6 +64,10 @@ class App extends React.Component {
     });
   }
 
+  onDisconnected(reason) {
+    this.setState({table: '', started: false});
+  }
+
   buildContent(state, updater) {
 
     // Prompt for name if we don't have one already
@@ -80,7 +87,11 @@ class App extends React.Component {
     const content = this.buildContent(this.state, this.updateLog);
     return (
       <div className="app">
-        <div className="title">DatT</div>
+        <div className="title">
+          <span role="img" aria-labelledby="dice-wizard">
+            🎲🧙
+          </span>
+        </div>
         {content}
       </div>
     );

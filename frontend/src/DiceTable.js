@@ -71,7 +71,7 @@ class DiceTable extends React.Component {
                 <div>Table: '{this.props.table}'</div>
                 <div className="dice">
                     <form onSubmit={this.roll}>
-                    <input onChange={this.updateDiceCount} value={this.state.count} />d<input onChange={this.updateDiceSize} value={this.state.size} />
+                    <input onChange={this.updateDiceCount} value={this.state.count} type="number" min="1" max="999" />d<input onChange={this.updateDiceSize} value={this.state.size} type="number" min="1" max="100" />
                     <button className="brutal" type="submit" autoFocus>roll</button>
                     </form>
                 </div>

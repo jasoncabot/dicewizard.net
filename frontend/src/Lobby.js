@@ -19,14 +19,14 @@ class Lobby extends React.Component {
         return (
             <form className="lobby" onSubmit={this.start}>
                 Welcome {this.props.name}, take a seat at a particular table or leave empty to start a new table
-                <p><input className="brutal" onChange={this.updateTable} autoFocus /></p>
+                <p><input className="brutal" placeholder="AAAA" pattern=".{4,4}" onChange={this.updateTable} value={this.state.table} maxLength="4" autoFocus /></p>
                 <p><button className="brutal" type="submit">{this.state.buttonText}</button></p>
             </form>
         );
     }
 
     updateTable(e) {
-        let table = e.target.value;
+        let table = e.target.value.toUpperCase();
         let buttonText = table === '' ? 
             'Start' : 
             'Join';
