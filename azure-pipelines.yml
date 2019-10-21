@@ -63,7 +63,7 @@ stages:
 - stage: DeployLatest
   displayName: Deploy to production
   jobs:
-  - deployment: 'Deploy Frontend'
+  - deployment: 'DeployFrontend'
     pool:
       vmImage: '$(vmImageName)'
     environment: Production
@@ -83,7 +83,7 @@ stages:
                 namespace: 'default'
                 manifests: '$(System.ArtifactsDirectory)/manifests/backend.yaml'
                 containers: 'diceatthetable.azurecr.io/frontend:v1.$(Build.BuildId)'
-  - deployment: 'Deploy Backend'
+  - deployment: 'DeployBackend'
     pool:
       vmImage: '$(vmImageName)'
     environment: Production
