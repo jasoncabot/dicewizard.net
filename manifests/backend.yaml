@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: diceatthetable.azurecr.io/backend:v1.26
+        ports:
+        - containerPort: 4500
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 4500
+  selector:
+    app: backend
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: backend
+  annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt
+    kubernetes.io/ingress.class: azure/application-gateway
+spec:
+  tls:
+  - hosts:
+    - ws.dicewizard.net
+    secretName: ws-dicewizard-net
+  rules:
+  - host: ws.dicewizard.net
+    http:
+      paths:
+      - backend:
+          serviceName: backend
+          servicePort: 80
