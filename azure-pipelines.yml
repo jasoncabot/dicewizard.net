@@ -82,7 +82,7 @@ stages:
                 kubernetesServiceConnection: '$(kubernetesServiceConnection)'
                 namespace: 'default'
                 manifests: '$(System.ArtifactsDirectory)/manifests/backend.yaml'
-                containers: 'diceatthetable.azurecr.io/frontend:v1.26'
+                containers: 'diceatthetable.azurecr.io/frontend:v1.$(Build.BuildId)'
   - deployment: 'Deploy Backend'
     pool:
       vmImage: '$(vmImageName)'
@@ -102,4 +102,4 @@ stages:
                 kubernetesServiceConnection: '$(kubernetesServiceConnection)'
                 namespace: 'default'
                 manifests: '$(System.ArtifactsDirectory)/manifests/frontend.yaml'
-                containers: 'diceatthetable.azurecr.io/frontend:v1.26'
+                containers: 'diceatthetable.azurecr.io/backend:v1.$(Build.BuildId)'
