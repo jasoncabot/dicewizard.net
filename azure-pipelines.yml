@@ -60,7 +60,7 @@ stages:
         artifactName: 'backend-manifest'
         targetPath: 'manifests/backend.yaml'
 
-- stage: Deploy latest version
+- stage: DeployLatest
   displayName: Deploy to production
   jobs:
   - deployment: 'Deploy Frontend'
