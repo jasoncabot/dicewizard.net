@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: diceatthetable.azurecr.io/frontend:v1.26
+        image: diceatthetable.azurecr.io/frontend
         ports:
         - containerPort: 3000
 ---
