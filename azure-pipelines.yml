@@ -27,21 +27,12 @@ stages:
 
     steps:
     - task: Docker@2
-      displayName: Build image
-      inputs:
-        repository: frontend
-        command: build
-        Dockerfile: frontend/Dockerfile
-
-    - task: Docker@2
-      displayName: Push image
       inputs:
         containerRegistry: 'acr'
-        repository: frontend
-        command: push
-        tags: |
-          latest
-          v1.$(Build.BuildId)
+        repository: 'frontend'
+        command: 'buildAndPush'
+        Dockerfile: 'frontend/Dockerfile'
+        tags: 'v1.$(Build.BuildId)'
 
 - stage: BuildBackend
   displayName: Build stage
@@ -52,18 +43,9 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - task: Docker@2
-      displayName: Build image
-      inputs:
-        repository: backend
-        command: build
-        Dockerfile: backend/Dockerfile
-
-    - task: Docker@2
-      displayName: Push image
       inputs:
         containerRegistry: 'acr'
-        repository: backend
-        command: push
-        tags: |
-          latest
-          v1.$(Build.BuildId)
+        repository: 'backend'
+        command: 'buildAndPush'
+        Dockerfile: 'backend/Dockerfile'
+        tags: 'v1.$(Build.BuildId)'
