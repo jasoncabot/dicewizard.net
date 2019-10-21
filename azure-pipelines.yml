@@ -19,43 +19,30 @@ variables:
 stages:
 - stage: BuildFrontend
   displayName: Build stage
-  jobs:  
+  jobs:
   - job: Build
     displayName: Build Frontend
     pool:
       vmImage: $(vmImageName)
 
     steps:
-    - task: Npm@1
-      displayName: "Install dependencies"
+    - task: Docker@2
+      displayName: Build image
       inputs:
-        command: 'install'
-        workingDir: 'frontend'
-    - task: Npm@1
-      displayName: "Create artifact"
-      inputs:
-        command: 'custom'
-        customCommand: 'run build --if-present'
-        workingDir: 'frontend'
+        repository: frontend
+        command: build
+        Dockerfile: frontend/Dockerfile
 
-    - task: ArchiveFiles@2
-      displayName: 'Archive files'
+    - task: Docker@2
+      displayName: Push image
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/frontend/build'
-        includeRootFolder: false
-        archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/frontend-$(Build.BuildId).zip
-        replaceExistingArchive: true
-
-    - upload: $(Build.ArtifactStagingDirectory)/frontend-$(Build.BuildId).zip
-      artifact: frontend
-
-    - task: AzureCLI@2
-      inputs:
-        azureSubscription: $(azureStorageSubscription)
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: 'az storage blob sync -c "\$web" --account-name "diceatthetable" -s "$(System.DefaultWorkingDirectory)/frontend/build"'
+        containerRegistry: |
+          diceatthetable.azurecr.io
+        repository: frontend
+        command: push
+        tags: |
+          latest
+          v1.$(Build.BuildId)
 
 - stage: BuildBackend
   displayName: Build stage
@@ -65,53 +52,20 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
-    - task: NodeTool@0
-      displayName: 'Use Node version'
+    - task: Docker@2
+      displayName: Build image
       inputs:
-        versionSpec: 10.x
+        repository: backend
+        command: build
+        Dockerfile: backend/Dockerfile
 
-    - task: Npm@0
-      displayName: 'npm install'
+    - task: Docker@2
+      displayName: Push image
       inputs:
-        cwd: backend
-        arguments: '--force'
-
-    - task: ArchiveFiles@2
-      displayName: 'Archive files '
-      inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/backend'
-        includeRootFolder: false
-        archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/backend-$(Build.BuildId).zip
-        replaceExistingArchive: true
-
-    - upload: $(Build.ArtifactStagingDirectory)/backend-$(Build.BuildId).zip
-      artifact: backend
-
-- stage: Deploy
-  displayName: Deploy stage
-  dependsOn: BuildBackend
-  condition: succeeded()
-  jobs:
-  - deployment: Deploy
-    displayName: Deploy
-    environment: $(environmentName)
-    pool: 
-      vmImage: $(vmImageName)
-    strategy:
-      runOnce:
-        deploy:
-          steps:            
-          - task: AzureRmWebAppDeployment@4
-            displayName: 'Azure App Service Deploy: diceatthetable'
-            inputs:
-              azureSubscription: $(azureSubscription)
-              appType: webAppLinux
-              WebAppName: $(webAppName)
-              packageForLinux: '$(Pipeline.Workspace)/backend/backend-$(Build.BuildId).zip'
-              RuntimeStack: 'NODE|10.10'
-              StartupCommand: 'node index.js'
-              ScriptType: 'Inline Script'
-              InlineScript: |
-                npm install
-                npm run build --if-present
+        containerRegistry: |
+          diceatthetable.azurecr.io
+        repository: backend
+        command: push
+        tags: |
+          latest
+          v1.$(Build.BuildId)
