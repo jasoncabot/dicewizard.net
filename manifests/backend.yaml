@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: diceatthetable.azurecr.io/backend:v1.26
+        image: diceatthetable.azurecr.io/backend
         ports:
         - containerPort: 4500
 ---
