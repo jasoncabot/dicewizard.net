@@ -36,8 +36,7 @@ stages:
     - task: Docker@2
       displayName: Push image
       inputs:
-        containerRegistry: |
-          diceatthetable.azurecr.io
+        containerRegistry: 'acr'
         repository: frontend
         command: push
         tags: |
@@ -62,8 +61,7 @@ stages:
     - task: Docker@2
       displayName: Push image
       inputs:
-        containerRegistry: |
-          diceatthetable.azurecr.io
+        containerRegistry: 'acr'
         repository: backend
         command: push
         tags: |
