@@ -75,13 +75,13 @@ stages:
               inputs:
                 buildType: 'current'
                 artifactName: 'frontend-manifest'
-                targetPath: '$(System.ArtifactsDirectory)/manifests'
+                targetPath: '$(System.ArtifactsDirectory)/manifests/frontend.yaml'
             - task: KubernetesManifest@0
               inputs:
                 action: 'deploy'
                 kubernetesServiceConnection: '$(kubernetesServiceConnection)'
                 namespace: 'default'
-                manifests: '$(System.ArtifactsDirectory)/manifests/backend.yaml'
+                manifests: '$(System.ArtifactsDirectory)/manifests/frontend.yaml'
                 containers: 'diceatthetable.azurecr.io/frontend:v1.$(Build.BuildId)'
   - deployment: 'DeployBackend'
     pool:
@@ -95,11 +95,11 @@ stages:
               inputs:
                 buildType: 'current'
                 artifactName: 'backend-manifest'
-                targetPath: '$(System.ArtifactsDirectory)/manifests'
+                targetPath: '$(System.ArtifactsDirectory)/manifests/backend.yaml'
             - task: KubernetesManifest@0
               inputs:
                 action: 'deploy'
                 kubernetesServiceConnection: '$(kubernetesServiceConnection)'
                 namespace: 'default'
-                manifests: '$(System.ArtifactsDirectory)/manifests/frontend.yaml'
+                manifests: '$(System.ArtifactsDirectory)/manifests/backend.yaml'
                 containers: 'diceatthetable.azurecr.io/backend:v1.$(Build.BuildId)'
