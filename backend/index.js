@@ -1,4 +1,13 @@
-const io = require('socket.io')();
+const server = require('http').createServer((req, res) => {
+    res.writeHead(200, {"Content-Type": "application/json"});
+    res.end("{\"status\": \"ok\"}\n");
+});
+const io = require('socket.io')(server, {
+    serveClient: false,
+    pingInterval: 10000,
+    pingTimeout: 5000,
+    cookie: false
+});
 
 const guid = () => {
     function _p8(s) {
@@ -149,4 +158,4 @@ io.on('connection', (socket) => {
     });
 });
 
-io.listen(process.env.PORT || 4500);
+server.listen(process.env.PORT || 4500);
