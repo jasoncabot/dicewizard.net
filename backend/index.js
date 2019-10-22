@@ -37,6 +37,7 @@ const roll = (count, size) => {
 
 let tables = {};
 let messages = {};
+let tableIdentifiers = {};
 
 const name = (id) => {
     return (tables[id] || {}).name;
@@ -88,8 +89,7 @@ io.on('connection', (socket) => {
         }
 
         let tableId = normalise(data.table);
-
-        if (!table(tableId)) {
+        if (!tableIdentifiers[tableId]) {
             log(socket, 'join', { error: 'table not found' });
             return;
         }
@@ -113,6 +113,7 @@ io.on('connection', (socket) => {
     socket.on('create', (data) => {
         log(socket, 'create', data);
         const tableId = randomString(4);
+        tableIdentifiers[tableId] = true;
         tables[socket.id] = {
             table: tableId,
             name: data.name // person name
