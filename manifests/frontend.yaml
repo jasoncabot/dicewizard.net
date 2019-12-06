@@ -36,7 +36,7 @@ metadata:
   name: frontend
   annotations:
     certmanager.k8s.io/cluster-issuer: letsencrypt
-    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     kubernetes.io/ingress.class: nginx
 spec:
   tls:
@@ -57,8 +57,8 @@ metadata:
   name: frontend-www
   annotations:
     certmanager.k8s.io/cluster-issuer: letsencrypt
-    appgw.ingress.kubernetes.io/ssl-redirect: "true"
-    kubernetes.io/ingress.class: azure/application-gateway
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    kubernetes.io/ingress.class: nginx
 spec:
   tls:
   - hosts:
