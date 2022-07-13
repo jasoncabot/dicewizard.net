@@ -1,0 +1,35 @@
+.dice {
+  margin: 1em 0;
+}
+
+.dice input {
+  border: none;
+  border-bottom: 1px dashed #333333;
+  box-sizing: border-box;
+  text-align: center;
+  width: 2em;
+  font-size: 1em;
+  font-family: Courier, monospace;
+}
+
+.dice button {
+  color: #FCFCFC;
+  background-color: #333333;
+  margin-left: 1em;
+}
+
+.brutal .secondary {
+  font-size: 1em;
+  background-color: #AAAAAA;
+}
+
+.dice div {
+  text-align: center;
+  margin: 1em;
+}
+
+.container ul {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}
