@@ -15,3 +15,6 @@ new_classes = ["Table"]
 
 [build]
 command = "node build.js"
+
+[vars]
+FRONTEND_URI = "https://dicewizard.net"

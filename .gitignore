@@ -25,3 +25,5 @@ yarn-error.log*
 .mf
 server/dist
 
+client/build
+client/.env

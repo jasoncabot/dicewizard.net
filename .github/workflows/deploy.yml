@@ -26,6 +26,7 @@ jobs:
         uses: cloudflare/wrangler-action@2.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: 'server'
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: publish
   deploy_pages:
@@ -44,11 +45,14 @@ jobs:
         with:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
       - run: yarn
+      - run: echo "REACT_APP_API_ENDPOINT=https://dicewizard-net.jasoncabot.workers.dev" > .env
+      - run: echo "REACT_APP_WS_ENDPOINT=wss://dicewizard-net.jasoncabot.workers.dev" >> .env
       - run: yarn build
       - name: Publish
         uses: cloudflare/wrangler-action@2.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: 'client'
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages publish --project-name=$SITE build
         env:
