@@ -52,34 +52,34 @@ export const DiceTable: React.FC<{ name: string, table: string, socket: WebSocke
         onLeave();
     }
 
-    const onMessageReceived = (message: MessageEvent<any>) => {
-        const { action, name, id, value, subtext } = JSON.parse(message.data);
-        const logLength = 10;
-        switch (action) {
-            case "join": // someone joined
-                setLog((previous) => [{ id, message: `${name} joined ${table}`, subtext }, ...previous.slice(0, logLength)]);
-                break;
-            case "roll": // someone rolled
-                setLog((previous) => [{ id, message: `${name} rolled ${value}`, subtext }, ...previous.slice(0, logLength)]);
-                break;
-            case "leave": // someone left
-                setLog((previous) => [{ id, message: `${name} left ${table}`, subtext }, ...previous.slice(0, logLength)]);
-                break;
-        }
-    }
-
-    const onSocketError = (error: Event) => {
-        console.error("Socket error " + error);
-    }
-
     useEffect(() => {
+        const onMessageReceived = (message: MessageEvent<any>) => {
+            const { action, name, id, value, subtext } = JSON.parse(message.data);
+            const logLength = 10;
+            switch (action) {
+                case "join": // someone joined
+                    setLog((previous) => [{ id, message: `${name} joined ${table}`, subtext }, ...previous.slice(0, logLength)]);
+                    break;
+                case "roll": // someone rolled
+                    setLog((previous) => [{ id, message: `${name} rolled ${value}`, subtext }, ...previous.slice(0, logLength)]);
+                    break;
+                case "leave": // someone left
+                    setLog((previous) => [{ id, message: `${name} left ${table}`, subtext }, ...previous.slice(0, logLength)]);
+                    break;
+            }
+        }
+
+        const onSocketError = (error: Event) => {
+            console.error("Socket error " + error);
+        }
+
         socket?.addEventListener('message', onMessageReceived);
         socket?.addEventListener('error', onSocketError);
         return function cleanup() {
             socket?.removeEventListener('message', onMessageReceived);
             socket?.removeEventListener('error', onSocketError);
         };
-    }, [socket, onMessageReceived]);
+    }, [socket, table]);
 
     return (
         <div className="container">
