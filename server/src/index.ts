@@ -1,7 +1,7 @@
 import { Router } from 'itty-router';
 
 import { SeatHandler } from './handlers';
-import { allowCrossOriginRequests, notFound } from './middleware';
+import { allowCrossOriginRequests, notFoundResponse } from './middleware';
 
 const router = Router({ base: '/api' })
   .post('/seats', SeatHandler.join)
@@ -11,7 +11,7 @@ const router = Router({ base: '/api' })
 
 const baseRouter = Router()
   .all('/api/*', router.handle)
-  .all('*', (_: Request, env: Bindings) => notFound(env, 'Route not registered'))
+  .all('*', (_: Request, env: Bindings) => notFoundResponse(env, 'Route not registered'))
   ;
 
 const worker: ExportedHandler<Bindings> = {

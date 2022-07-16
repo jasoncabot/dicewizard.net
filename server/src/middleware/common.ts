@@ -1,3 +1,16 @@
 import { corsHeaders } from "./cors";
 
-export const notFound = (env: Bindings, message: string) => (_: Request) => new Response(message, { status: 404, headers: { ...corsHeaders(env) } });
+export const notFoundResponse = (env: Bindings, message: string) => {
+    return new Response(message, {
+        status: 404,
+        headers: { "Content-Type": "text/plain", ...corsHeaders(env) }
+    });
+}
+
+export const errorResponse = (env: Bindings, error: string) => {
+    return new Response(error, {
+        status: 400,
+        headers: { "Content-Type": "text/plain", ...corsHeaders(env) }
+    });
+}
+

@@ -1,23 +1,17 @@
-import { corsHeaders } from "@/middleware";
-
-const errorResponse = (env: Bindings, error: string) => {
-    new Response(JSON.stringify({ error }), {
-        headers: {
-            "Content-Type": "application/json",
-            ...corsHeaders(env)
-        }
-    })
-}
+import { corsHeaders, errorResponse } from "@/middleware";
 
 const join = async (request: Request, env: Bindings, ctx: ExecutionContext) => {
-    const { name, table } = await request.json();
+    let { name, table } = await request.json();
 
     // Make name take a seat at the table
-    const errors = [];
     if (name.length < 2 || name.length > 30) {
         return errorResponse(env, "Name should be between 2 and 30 characters");
     }
-    if (table.length !== 4) {
+    if (table.length === 0) {
+        // create rather than join table
+        table = crypto.randomUUID().substring(0, 4).toUpperCase();
+
+    } else if (table.length !== 4) {
         return errorResponse(env, "Invalid code for table");
     }
 
@@ -30,7 +24,7 @@ const join = async (request: Request, env: Bindings, ctx: ExecutionContext) => {
         const response = await obj.fetch(`https://table?action=join&name=${name}`);
         const text = await response.text();
         if (response.status === 201) {
-            return new Response(JSON.stringify({ token: text }), {
+            return new Response(JSON.stringify({ table, token: text }), {
                 headers: {
                     "Content-Type": "application/json",
                     ...corsHeaders(env)

@@ -11,9 +11,9 @@ const Lobby: React.FC<{ name: string, onTableUpdated: (table: string, connection
         fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/seats`, { method: "POST", body: JSON.stringify({ name, table }) })
             .then(async r => { if (!r.ok) throw new Error(await r.text()); return r })
             .then(response => response.json())
-            .then(response => `${process.env.REACT_APP_WS_ENDPOINT}/api/connection?table=${table}&token=${response.token}`)
-            .then(websocketURL => onTableUpdated(table, websocketURL))
-            .catch(e => console.error(`Unable to join table ${table} as ${name}. ` + e))
+            .then(response => { return { websocketURL: `${process.env.REACT_APP_WS_ENDPOINT}/api/connection?table=${response.table}&token=${response.token}`, table: response.table } })
+            .then(({ websocketURL, table }) => onTableUpdated(table, websocketURL))
+            .catch(e => console.error(`Unable to join table "${table}" as ${name}. ` + e))
             ;
     }
 

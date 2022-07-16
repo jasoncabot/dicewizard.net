@@ -27,3 +27,4 @@ server/dist
 
 client/build
 client/.env
+server/.env
