@@ -36,7 +36,6 @@ export const DiceTable: React.FC<{ name: string, table: string, socket: WebSocke
 
     const updateDiceSize = (event: ChangeEvent<HTMLSelectElement>) => {
         const next = parseInt(event.target.value, 10);
-        console.log('got next ' + next);
         const foundIndex = sizes.indexOf(next);
         const clamp = (x: number) => Math.max(0, Math.min(sizes.length - 1, x));
         if (foundIndex >= 0) {
