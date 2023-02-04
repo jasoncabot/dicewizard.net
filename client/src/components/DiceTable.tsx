@@ -31,11 +31,12 @@ export const DiceTable: React.FC<{ name: string, table: string, socket: WebSocke
     }
 
     const updateDiceCount = (event: ChangeEvent<HTMLInputElement>) => {
-        setCount(parseInt(event.target.value));
+        setCount(parseInt(event.target.value, 10));
     }
 
-    const updateDiceSize = (event: ChangeEvent<HTMLInputElement>) => {
-        const next = parseInt(event.target.value);
+    const updateDiceSize = (event: ChangeEvent<HTMLSelectElement>) => {
+        const next = parseInt(event.target.value, 10);
+        console.log('got next ' + next);
         const foundIndex = sizes.indexOf(next);
         const clamp = (x: number) => Math.max(0, Math.min(sizes.length - 1, x));
         if (foundIndex >= 0) {
@@ -54,14 +55,22 @@ export const DiceTable: React.FC<{ name: string, table: string, socket: WebSocke
 
     useEffect(() => {
         const onMessageReceived = (message: MessageEvent<any>) => {
-            const { action, name, id, value, subtext } = JSON.parse(message.data);
+            const { action, name, id, value, subtext, results } = JSON.parse(message.data);
             const logLength = 10;
             switch (action) {
                 case "join": // someone joined
                     setLog((previous) => [{ id, message: `${name} joined ${table}`, subtext }, ...previous.slice(0, logLength)]);
                     break;
                 case "roll": // someone rolled
-                    setLog((previous) => [{ id, message: `${name} rolled ${value}`, subtext }, ...previous.slice(0, logLength)]);
+                let truncatedResults: any[];
+                if (results.length > 5) {
+                    truncatedResults = results.slice(0, 2);
+                    truncatedResults.push("...");
+                    truncatedResults.push(results.slice(-1));
+                } else {
+                    truncatedResults = results;
+                }
+                setLog((previous) => [{ id, message: `${name} rolled ${value} (${truncatedResults.join(',')})`, subtext }, ...previous.slice(0, logLength)]);
                     break;
                 case "leave": // someone left
                     setLog((previous) => [{ id, message: `${name} left ${table}`, subtext }, ...previous.slice(0, logLength)]);
@@ -81,13 +90,20 @@ export const DiceTable: React.FC<{ name: string, table: string, socket: WebSocke
         };
     }, [socket, table]);
 
+    const diceOptions = sizes.map((value, index) => (
+        <option value={value}>{value}</option>                        
+    ))
+
     return (
         <div className="container">
             <div>Table: '{table}'</div>
             <div className="dice">
                 <form onSubmit={roll}>
                     <div>
-                        <input onChange={updateDiceCount} value={count} type="number" min="1" max="999" />d<input onChange={updateDiceSize} value={sizes[sizeIndex]} type="number" min="1" max="100" />
+                        <input onChange={updateDiceCount} value={count} type="number" min="1" max="999" />d
+                        <select value={sizes[sizeIndex]} onChange={updateDiceSize}>
+                            {diceOptions}
+                        </select>
                     </div>
                     <div>
                         <button className="brutal" type="submit" autoFocus>roll</button>

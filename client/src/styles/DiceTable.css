@@ -2,12 +2,11 @@
   margin: 1em 0;
 }
 
-.dice input {
+.dice input, .dice select {
   border: none;
   border-bottom: 1px dashed #333333;
   box-sizing: border-box;
   text-align: center;
-  width: 2em;
   font-size: 1em;
   font-family: Courier, monospace;
 }
